@@ -150,6 +150,11 @@ public class ColorPreference extends Preference implements ColorPickerDialogList
     saveValue(color);
   }
 
+  @Override
+  public void onColorReset(int dialogId) {
+
+  }
+
   @Override public void onDialogDismissed(int dialogId) {
     // no-op
   }

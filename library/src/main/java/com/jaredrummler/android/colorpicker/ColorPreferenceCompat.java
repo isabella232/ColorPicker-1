@@ -146,6 +146,11 @@ public class ColorPreferenceCompat extends Preference implements ColorPickerDial
     saveValue(color);
   }
 
+  @Override
+  public void onColorReset(int dialogId) {
+
+  }
+
   @Override public void onDialogDismissed(int dialogId) {
     // no-op
   }
