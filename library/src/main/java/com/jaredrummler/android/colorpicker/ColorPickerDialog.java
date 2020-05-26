@@ -112,6 +112,7 @@ public class ColorPickerDialog extends DialogFragment implements ColorPickerView
     private static final String ARG_PRESETS = "presets";
     private static final String ARG_ALLOW_PRESETS = "allowPresets";
     private static final String ARG_ALLOW_CUSTOM = "allowCustom";
+    private static final String ARG_ALLOW_RESET = "allowReset";
     private static final String ARG_DIALOG_TITLE = "dialogTitle";
     private static final String ARG_TITLE_TEXT_COLOR = "titleTextColor";
     private static final String ARG_TITLE_FONT = "titleFont";
@@ -119,6 +120,7 @@ public class ColorPickerDialog extends DialogFragment implements ColorPickerView
     private static final String ARG_COLOR_SHAPE = "colorShape";
     private static final String ARG_PRESETS_BUTTON_TEXT = "presetsButtonText";
     private static final String ARG_CUSTOM_BUTTON_TEXT = "customButtonText";
+    private static final String ARG_RESET_BUTTON_TEXT = "resetButtonText";
     private static final String ARG_CUSTOM_BUTTON_COLOR = "customButtonColor";
     private static final String ARG_CUSTOM_BUTTON_TEXT_COLOR = "customButtonTextColor";
     private static final String ARG_SELECTED_BUTTON_TEXT = "selectedButtonText";
@@ -157,6 +159,7 @@ public class ColorPickerDialog extends DialogFragment implements ColorPickerView
     TextView titleTextView;
     Button customButton;
     Button selectButton;
+    TextView resetButton;
     boolean showAlphaSlider;
     private int presetsButtonStringRes;
     private boolean fromEditText;
@@ -222,6 +225,7 @@ public class ColorPickerDialog extends DialogFragment implements ColorPickerView
         titleTextView = view.findViewById(R.id.cpv_color_picker_title);
         customButton = view.findViewById(R.id.cpv_color_picker_custom_button);
         selectButton = view.findViewById(R.id.cpv_color_picker_select_button);
+        resetButton = view.findViewById(R.id.cpv_color_picker_custom_reset);
 
         int backgroundColor = getArguments().getInt(ARG_BACKGROUND_COLOR, 0);
         if (backgroundColor != 0) {
@@ -251,6 +255,18 @@ public class ColorPickerDialog extends DialogFragment implements ColorPickerView
             }
         });
 
+        int resetButtonStringRes = getArguments().getInt(ARG_RESET_BUTTON_TEXT);
+        if (resetButtonStringRes != 0) {
+            resetButton.setText(resetButtonStringRes);
+        }
+        resetButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onColorReset();
+                dismiss();
+            }
+        });
+
         presetsButtonStringRes = getArguments().getInt(ARG_PRESETS_BUTTON_TEXT);
         customButtonStringRes = getArguments().getInt(ARG_CUSTOM_BUTTON_TEXT);
 
@@ -268,6 +284,13 @@ public class ColorPickerDialog extends DialogFragment implements ColorPickerView
             customButton.setVisibility(View.VISIBLE);
         } else {
             customButton.setVisibility(View.GONE);
+        }
+
+        final boolean allowReset = getArguments().getBoolean(ARG_ALLOW_RESET);
+        if (allowReset) {
+            resetButton.setVisibility(View.VISIBLE);
+        } else {
+            resetButton.setVisibility(View.GONE);
         }
 
         int customButtonColor = getArguments().getInt(ARG_CUSTOM_BUTTON_COLOR, 0);
@@ -299,6 +322,7 @@ public class ColorPickerDialog extends DialogFragment implements ColorPickerView
         if (buttonFont != 0) {
             selectButton.setTypeface(ResourcesCompat.getFont(requireContext(), buttonFont));
             customButton.setTypeface(ResourcesCompat.getFont(requireContext(), buttonFont));
+            resetButton.setTypeface(ResourcesCompat.getFont(requireContext(), buttonFont));
         }
 
         // Do not dismiss the dialog when clicking the neutral button.
@@ -696,6 +720,20 @@ public class ColorPickerDialog extends DialogFragment implements ColorPickerView
         }
     }
 
+    private void onColorReset() {
+        if (colorPickerDialogListener != null) {
+            Log.w(TAG, "Using deprecated listener which may be remove in future releases");
+            colorPickerDialogListener.onColorReset(dialogId);
+            return;
+        }
+        Activity activity = getActivity();
+        if (activity instanceof ColorPickerDialogListener) {
+            ((ColorPickerDialogListener) activity).onColorReset(dialogId);
+        } else {
+            throw new IllegalStateException("The activity must implement ColorPickerDialogListener");
+        }
+    }
+
     private void onDialogDismissed() {
         if (colorPickerDialogListener != null) {
             Log.w(TAG, "Using deprecated listener which may be remove in future releases");
@@ -864,6 +902,8 @@ public class ColorPickerDialog extends DialogFragment implements ColorPickerView
         int customButtonText = R.string.cpv_custom;
         @StringRes
         int selectedButtonText = R.string.cpv_select;
+        @StringRes
+        int resetButtonText = 0;
         @DialogType
         int dialogType = TYPE_PRESETS;
         int[] presets = MATERIAL_COLORS;
@@ -873,6 +913,7 @@ public class ColorPickerDialog extends DialogFragment implements ColorPickerView
         boolean showAlphaSlider = false;
         boolean allowPresets = true;
         boolean allowCustom = true;
+        boolean allowReset = true;
         boolean showColorShades = true;
         @ColorShape
         int colorShape = ColorShape.CIRCLE;
@@ -947,6 +988,11 @@ public class ColorPickerDialog extends DialogFragment implements ColorPickerView
          */
         public Builder setCustomButtonText(@StringRes int customButtonText) {
             this.customButtonText = customButtonText;
+            return this;
+        }
+
+        public Builder setResetButtonText(@StringRes int resetButtonText) {
+            this.resetButtonText = resetButtonText;
             return this;
         }
 
@@ -1025,6 +1071,11 @@ public class ColorPickerDialog extends DialogFragment implements ColorPickerView
          */
         public Builder setAllowCustom(boolean allowCustom) {
             this.allowCustom = allowCustom;
+            return this;
+        }
+
+        public Builder setAllowReset(boolean allowReset) {
+            this.allowReset = allowReset;
             return this;
         }
 
@@ -1126,6 +1177,7 @@ public class ColorPickerDialog extends DialogFragment implements ColorPickerView
             args.putBoolean(ARG_ALPHA, showAlphaSlider);
             args.putBoolean(ARG_ALLOW_CUSTOM, allowCustom);
             args.putBoolean(ARG_ALLOW_PRESETS, allowPresets);
+            args.putBoolean(ARG_ALLOW_RESET, allowReset);
             args.putInt(ARG_DIALOG_TITLE, dialogTitle);
             args.putBoolean(ARG_SHOW_COLOR_SHADES, showColorShades);
             args.putInt(ARG_COLOR_SHAPE, colorShape);
@@ -1136,6 +1188,7 @@ public class ColorPickerDialog extends DialogFragment implements ColorPickerView
             args.putInt(ARG_SELECTED_BUTTON_TEXT, selectedButtonText);
             args.putInt(ARG_SELECTED_BUTTON_COLOR, selectButtonColor);
             args.putInt(ARG_SELECTED_BUTTON_TEXT_COLOR, selectButtonTextColor);
+            args.putInt(ARG_RESET_BUTTON_TEXT, resetButtonText);
             args.putInt(ARG_BUTTON_FONT, buttonFont);
             args.putInt(ARG_TITLE_TEXT_COLOR, titleTextColor);
             args.putInt(ARG_TITLE_FONT, titleFont);

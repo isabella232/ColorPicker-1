@@ -32,6 +32,13 @@ public interface ColorPickerDialogListener {
   void onColorSelected(int dialogId, @ColorInt int color);
 
   /**
+   * Callback that is invoked when user clicks the reset button.
+   *
+   * @param dialogId The dialog id used to create the dialog instance.
+   */
+  void onColorReset(int dialogId);
+
+  /**
    * Callback that is invoked when the color picker dialog was dismissed.
    *
    * @param dialogId The dialog id used to create the dialog instance.
