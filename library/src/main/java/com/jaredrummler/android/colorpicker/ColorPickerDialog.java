@@ -301,6 +301,7 @@ public class ColorPickerDialog extends DialogFragment implements ColorPickerView
         int selectButtonColor = getArguments().getInt(ARG_SELECTED_BUTTON_COLOR, 0);
         if (selectButtonColor != 0) {
             selectButton.setBackgroundTintList(ColorStateList.valueOf(selectButtonColor));
+            resetButton.setTextColor(selectButtonColor);
         }
 
         int customButtonTextColor = getArguments().getInt(ARG_CUSTOM_BUTTON_TEXT_COLOR, 0);
