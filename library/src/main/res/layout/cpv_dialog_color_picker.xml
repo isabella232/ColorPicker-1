@@ -19,8 +19,7 @@
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
             android:orientation="horizontal"
-            android:paddingTop="16dp"
-            android:paddingBottom="16dp">
+            android:paddingTop="16dp">
 
             <com.jaredrummler.android.colorpicker.ColorPanelView
                 android:id="@+id/cpv_color_panel_new"

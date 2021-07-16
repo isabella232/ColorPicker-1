@@ -58,8 +58,12 @@ public class ColorPanelView extends View {
   private RectF centerRect = new RectF();
   private boolean showOldColor;
 
-  /* The width in pixels of the border surrounding the color panel. */
-  private int borderWidthPx;
+  /*
+    The width in pixels of the border surrounding the color panel.
+    We don't want a border around the color panel in Discord UI, so we can
+    just set the width to 0.
+  */
+  private int borderWidthPx = 0;
   private int borderColor = DEFAULT_BORDER_COLOR;
   private int color = Color.BLACK;
   private int shape;
@@ -111,7 +115,6 @@ public class ColorPanelView extends View {
       borderColor = typedArray.getColor(0, borderColor);
       typedArray.recycle();
     }
-    borderWidthPx = DrawingUtils.dpToPx(context, 1);
     borderPaint = new Paint();
     borderPaint.setAntiAlias(true);
     colorPaint = new Paint();
